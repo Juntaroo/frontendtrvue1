@@ -1,14 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+//import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { StorageUser } from '@/stores/userStore'
+import type { UserData } from '@/models/UserModel'
 
-/*const user = ref('')
-const password = ref('')*/
-//const userConsole = StorageUser()
-const remember = ref(false)
+// importaciones de librerias
+import { Form, Field } from 'vee-validate'
+import * as Yup from 'yup'
+/*const user: UserData = reactive<User>({
+  username: '',
+  password: '',
+  remember: '',
+  })*/
+
 const router = useRouter()
 
+const schema = Yup.object().shape({
+  username: Yup.string().required('Usuario Requerido'),
+  password: Yup.string().required('Password Requerido')
+})
 function handleSubmit() {
   //cuando el usuario le de en ingresar se tomarán los datos por consola
   /*const userData = {
@@ -18,26 +28,38 @@ function handleSubmit() {
   };*/
 
   /*userConsole.setUser(userData);*/
-  router.push('/') //estoy redireccionando al Homw
+  router.push('/home') //estoy redireccionando al Homw
 }
 </script>
 
 <template>
   <div class="wrapper">
-    <form id="loginForm" @submit.prevent="handleSubmit">
+    <Form
+      id="loginForm"
+      @submit.prevent="handleSubmit"
+      :validation-schema="schema"
+      v-slot="{ errors, isSubmitting }"
+    >
       <h1>Login</h1>
       <div class="input-bx">
-        <input type="text" placeholder="Usuario" required />
+        <Field
+          name="username"
+          type="text"
+          :class="{ 'is-invalid': errors.username || errors.apiError }"
+          placeholder="Usuario"
+          required
+        />
+        <div class="invalid-feedback">{{ errors.username }}</div>
       </div>
       <div class="input-bx">
-        <input type="password" placeholder="Contraseña" required />
+        <Field name="password" pe="password" placeholder="Contraseña" required />
       </div>
       <div class="remember-forgot">
-        <label> <input type="checkbox" v-model="remember" /> Recordarme </label>
+        <label> <Field name="remember" type="checkbox" /> Recordarme </label>
         <a href="#">Olvidaste tu contraseña</a>
       </div>
       <button type="submit" class="btn" @click.prevent="handleSubmit">Ingresar</button>
-    </form>
+    </Form>
   </div>
 </template>
 
