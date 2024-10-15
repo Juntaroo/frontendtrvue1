@@ -1,14 +1,21 @@
 <script setup lang="ts">
+import { useAuthStore } from '@/stores/authStore'
+
+const authStore = useAuthStore()
+
+function logout() {
+  authStore.logout()
+}
 </script>
 
 <template>
   <div class="wrapper">
     <h1>Este es el home</h1>
+    <button @click="logout">Logout</button>
   </div>
 </template>
 
 <style scoped>
-
 .wrapper {
   width: 400px;
   background: transparent;
@@ -24,5 +31,4 @@
   font-size: 3em;
   text-align: center;
 }
-
 </style>
