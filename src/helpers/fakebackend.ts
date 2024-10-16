@@ -9,21 +9,31 @@ const usersKey = 'vue-3-jwt-refresh-token-users'
 const users: UserData[] = JSON.parse(localStorage.getItem(usersKey) || '[]')
 
 // Agregar un usuario test en localstorage si no hay ninguno
-const user: UserData = {
-  id: 1,
-  firstname: 'Maxi',
-  lastname: 'Miño',
-  username: 'test',
-  password: 'test',
-  isAdmin: true,
-  jwtToken: 'aksodmaskodma',
-  refreshTokens: []
-}
+const usersArray: UserData[] = [
+  {
+    id: 1,
+    firstname: 'Julian',
+    lastname: 'Godoy',
+    username: 'admin',
+    password: 'admin',
+    isAdmin: true,
+    refreshTokens: []
+  },
+  {
+    id: 2,
+    firstname: 'test',
+    lastname: 'test',
+    username: 'test',
+    password: 'test',
+    isAdmin: false,
+    refreshTokens: []
+  }
+]
 
 // si no hay usuarios creamos uno y lo guardamos en almacenamiento local
 if (!users.length) {
-  users.push(user)
-  localStorage.setItem(usersKey, JSON.stringify(users))
+  users.push(...usersArray) // Usar el spread operator para agregar los usuarios
+  localStorage.setItem(usersKey, JSON.stringify(users)) // Guarda en localstorage
 }
 
 function fakeBackend() {

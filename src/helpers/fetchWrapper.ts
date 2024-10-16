@@ -13,20 +13,25 @@ function request(method: string) {
       method,
       headers: authHeader(url)
     }
+
     if (body) {
       requestOptions.headers = {
         ...requestOptions.headers,
         'Content-Type': 'application/json'
       }
+
+      requestOptions.body = JSON.stringify(body)
     }
+
     if (credentials) {
       requestOptions.credentials = credentials
     }
+
     return fetch(url, requestOptions).then(handleResponse)
   }
 }
 
-// helper functions
+//Funciones auxiliares
 
 function authHeader(url: string): Record<string, string> {
   const { auth } = useAuthStore()
@@ -34,7 +39,7 @@ function authHeader(url: string): Record<string, string> {
   const isApiUrl = url.startsWith(import.meta.env.VITE_API_URL)
 
   if (isLoggedIn && isApiUrl) {
-    return { Authorization: `Bearer $(auth.data?.jwtToken)` }
+    return { Authorization: `Bearer ${auth.data?.jwtToken}` }
   } else {
     return {}
   }
@@ -53,5 +58,6 @@ async function handleResponse(response: Response): Promise<any> {
     const error = (data && data.message) || response.statusText
     return Promise.reject(error)
   }
+
   return data
 }

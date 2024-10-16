@@ -12,12 +12,18 @@ export const useAuthStore = defineStore({
   }),
   actions: {
     async login(username: string, password: string) {
-      this.auth.data = await fetchWrapper.post(
-        `${baseUrl}/authenticate`,
-        { username, password },
-        { credentials: 'include' }
-      )
-      this.startRefreshTokenTimer()
+      console.log('Intentando iniciar sesión con:', { username, password }) // Agrega esta línea
+      try {
+        this.auth.data = await fetchWrapper.post(
+          `${baseUrl}/authenticate`,
+          { username, password },
+          { credentials: 'include' }
+        )
+        this.startRefreshTokenTimer()
+      } catch (error) {
+        console.error('Login error:', error)
+        throw new Error('Error de autenticación, credenciales inválidas.')
+      }
     },
     logout() {
       fetchWrapper.post(`${baseUrl}/revoke-token`, {}, { credentials: 'include' })
@@ -26,11 +32,16 @@ export const useAuthStore = defineStore({
       router.push({ name: 'LoginPage' })
     },
     async refreshToken() {
-      this.auth.data = await fetchWrapper.post(
-        `${baseUrl}/refresh-token`,
-        {},
-        { credentials: 'include' }
-      )
+      try {
+        this.auth.data = await fetchWrapper.post(
+          `${baseUrl}/refresh-token`,
+          {},
+          { credentials: 'include' }
+        )
+      } catch (error) {
+        console.error('Error al refrescar el token:', error)
+        this.logout()
+      }
     },
     startRefreshTokenTimer() {
       if (!this.auth.data || !this.auth.data.jwtToken) return

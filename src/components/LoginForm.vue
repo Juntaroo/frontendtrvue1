@@ -1,18 +1,10 @@
 <script setup lang="ts">
-//import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-import { StorageUser } from '@/stores/userStore'
-import type { UserData } from '@/models/UserModel'
 import { useAuthStore } from '@/stores/authStore'
 
 // importaciones de librerias
-import { Form, Field } from 'vee-validate'
+import { Form, Field, useForm } from 'vee-validate'
 import * as Yup from 'yup'
-/*const user: UserData = reactive<User>({
-  username: '',
-  password: '',
-  remember: '',
-  })*/
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -22,11 +14,8 @@ const schema = Yup.object().shape({
   password: Yup.string().required('Password Requerido')
 })
 
-if (authStore.auth.data) {
-  router.push('/')
-}
-
 function handleSubmit(values: any, { setErrors }: any) {
+  //esto se envia al formulario a la hora de que se haga submit
   const { username, password } = values
   return authStore
     .login(username, password)
@@ -35,13 +24,19 @@ function handleSubmit(values: any, { setErrors }: any) {
     })
     .catch((error) => setErrors({ apiError: error }))
 }
+
+if (authStore.auth.data) {
+  router.push('/')
+}
+
+//Nota: queria utilizar otro metodo pero el Form no podia recibir eventos y valores por lo que opte por este otro metodo
 </script>
 
 <template>
   <div class="wrapper">
     <Form
       id="loginForm"
-      @submit.prevent="handleSubmit"
+      @submit="handleSubmit"
       :validation-schema="schema"
       v-slot="{ errors, isSubmitting }"
     >
